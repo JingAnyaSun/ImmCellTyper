@@ -1,0 +1,114 @@
+---
+title: "Introduction to batch examination and correction"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to batch examination and correction}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+# Introduction to BinaryClust2 and batch effects
+BinaryClust2 is a systematic toolkit which enables data examination and downstream in-depth analysis of cell populations. Basically, it can be divided into two parts:
+1. Batch examination and correction(if needed);
+2. In-depth data exploration, visualization and differential comparison. 
+
+When samples are stained and measurements are done at multiple time points or sites, technical variation might be introduced to the acquisition results, which leads to batch effects and biases true biological differences between study groups.Therefore it is important to perform batch examination/evaluation and normalization when applicable before going down for differential analysis.  
+
+Here, we give a detailed explanation on how to do batch evaluation using various diagnostic plots, and correct batch-induced differences by CytoNorm or CytofRUV. 
+
+#Set up 
+Our batch effect evaluation strategy is based on the method and fcs files by Mtrussart et al. First users need to load all the packages required. 
+```{r setup}
+library(BinaryClust2)
+library(readxl)
+library(CATALYST)
+library(SingleCellExperiment)
+library(flowCore)
+library(cowplot)
+library(CytoNorm)
+library(CytofRUV)
+library(dplyr)
+library(writexl)
+```
+#Import dataset and metadata files 
+In the example folder named 'test_files', there are 4 fcs files, one sample metadata excel file('Metadata.xlsx'), and one panel metadata file('Panel.xlsx'). 
+
+The metadata file has 5 columns: 'file_name', 'sample_id', 'condition', 'patient_id', 'batch', which contains the information of the grouping, conditions and batches of each fcs file. Since our batch correction method is based on CytofRUV or CytoNorm, reference/anchor sample in each batch is required, and shall be named as 'Ref' in the condition column; The panel file contains 3 columns: 'fcs_colname','antigen','marker_class'.  
+
+The following is to point the file path for fcs files and metadata files. It is suggested that users put all the files under the same folder and to which set working directory.   
+
+```{r}
+setwd("/Users/jingsun/Desktop/PhD project/CyTOF pipeline development/test_files")
+fcs_dir <- getwd()
+metadata_dir <- 'Metadata.xlsx'
+panel_dir <- "Panel.xlsx"
+#OR we can adapt the example provided by CytofRUV as follows:
+output_dir="test_files"
+  if (!dir.exists(output_dir)){
+    dir.create(output_dir)
+  }
+fcs_dir=file.path(getwd(),output_dir)
+write.FCS(x=CytofRUV::A1,filename =file.path(wd_data,"A1.fcs"))
+write.FCS(x=CytofRUV::A2,filename = file.path(wd_data,"A2.fcs"))
+write.FCS(x=CytofRUV::Run3_A1,filename = file.path(wd_data,"Run3_A1.fcs"))
+write.FCS(x=CytofRUV::Run3_A2,filename = file.path(wd_data,"Run3_A2.fcs"))
+write_xlsx(x=CytofRUV::md,path = file.path(wd_data,"Metadata.xlsx"))
+write_xlsx(x=CytofRUV::panel,path = file.path(wd_data,"Panel.xlsx"))
+metadata_dir <- 'Metadata.xlsx'
+panel_dir <- "Panel.xlsx" 
+```
+# Data preparation and plotting diagnostic plots 
+Next is to integrate the fcs files and metadata into the one sce object and plot diagnostic plots one 4 levels:
+1.Marker expression(median marker expression heatmap and MDS plot)
+2.Marker expression intensity distribution;
+3.Clustering results(flowSOM);
+4.Cluster proportion
+
+```{r}
+#prepare data
+prepsce<-batchPrep(fcs_dir,metadata_dir,panel_dir)
+#(Optional):if the data is heavy, users can choose to downsample prepsce for diagnostic plots to speed up, this is not gonna affect the normalisation step 
+prepsce_n<-downsample(prepsce,n=1000)
+#evaluate marker expression across batches   
+plotExprs(prepsce, color_by = "batch")
+pbMDS(prepsce, color_by="batch")
+plotExprHeatmap(prepsce, bin_anno = TRUE, row_anno = TRUE)
+#evaluate batch effect on clustering level
+batchExam(prepsce,downsample=1000,DR_method='TSNE')
+batchExam(prepsce,downsample=2000,k=25,DR_method='UMAP')
+```
+# Batch normlisation if applicable
+Users can determine whether significant batch effects exist in the dataset based on the diagnostic plots. If so, batch normalization is recommended and can be done by the below commands. There are two methods available in the function 'batchNorm': CytoNorm and CytofRUV, both are well-performing algorithms.   
+
+```{r}
+#Use CytofRUV for correction
+batchNorm(fcs_dir,metadata_dir,panel_dir,method='CytofRUV',output_dir='Norm_output')
+#Or use CytoNorm for correction 
+batchNorm(fcs_dir,metadata_dir,panel_dir,method='CytoNorm',output_dir='Norm_output')
+```
+# Re-evaluation 
+After running the batch correction algorithms, the resulting normalized fcs files and new metadata files are in the output_dir folder.It is important to check and re-evaluate the outcome, in a bid to see if it is necessary to adjust certain parameters to achieve better results. 
+```{r}
+#change file path to the output folder
+output_dir <- 'Norm_output'
+metadata_dir_norm <- file.path(output_dir,'Norm_Metadata.xlsx')
+panel_dir_norm <- file.path(output_dir,'Norm_Panel.xlsx')
+fcs_dir_norm <- output_dir
+#prepare the normalised data into a sce object
+prepsce_norm<-batchPrep(fcs_dir=fcs_dir_norm,md_dir=metadata_dir_norm,panel_dir=panel_dir_norm)
+#Perform diagnositic plots as previous ones
+plotExprs(prepsce_norm, color_by = "batch")
+pbMDS(prepsce_norm, color_by="batch")
+plotExprHeatmap(prepsce_norm, bin_anno = TRUE, row_anno = TRUE)
+batchExam(prepsce_norm,downsample=1000,DR_method='TSNE')
+batchExam(prepsce_norm,downsample=2000,k=25,DR_method='UMAP')
+
+```
+
+

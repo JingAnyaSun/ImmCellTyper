@@ -1,0 +1,161 @@
+---
+title: "Introduction to BinaryClust2 data analysis pipeline"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to BinaryClust2 data analysis pipeline}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+#Introduction to BinaryClust2 data analysis pipeline
+BinaryClust2 was further developed based on BinaryClust with adaption of the framework and structure of CyTOF data analysis workflow described by Nowicka et al. This package enables automatic classification and annotation of main cell types as well as in-depth interrogation of certain sub-population of interest.
+
+After data quality check, batch effect evaluation and correction, here we can continue for differential analysis. 
+
+First, load below R packages. 
+```{r setup}
+#load required R packages 
+library(BinaryClust2)
+library(BinaryClust2)
+library(CATALYST)
+library(readxl)
+library(flowCore)
+library(SingleCellExperiment)
+library(cowplot)
+library(ggplot2)
+library(reshape2)
+library(dplyr)
+library(caret)
+library(rstatix)
+library(Rphenograph)
+library(readr)
+library(RColorBrewer)
+library(igraph)
+```
+#Data Preparation
+Users are required to prepare two excel files of panel metadata and sample metadata. Briefly, panel metadata describes the panel used in the experiment, which includes three columns: ‘fcs_colname’, ‘antigen’ and ‘marker_class’. ‘fcs_colname’ is metal/channel names and can be checked via either cytobank or using flowCore package function: colnames(fs), here ‘fs’ refers to a flowset; ‘Antigen’ refers to marker names which can be checked from the applied CyTOF kit instructions; Based on CATALYST, markers can be classified as ‘type’, which means lineage markers and will be used for clustering and ‘state’ which indicates functional markers like intercellular signalling proteins etc. Sample metadata is experimental design which contains the information of fcs file name(‘file_name’), ‘sample_id’, ‘patient_id’, experimental grouping(‘condition’), or additional information like ‘outcome’ etc. Please prepare you own sample metadata accordingly. 
+
+Before importing into R-based analytical pipelines, all fcs files are supposed to be normalised for signal fluctuation during acquisition and cleaned up to exclude all sorts of debris, doublets etc. using third-party platform, for instance, Cytobank(https://premium.cytobank.org/cytobank/login). Some users might prefer to do compensation dependent on their preference and previous experience of handling certain types of panel and samples. 
+```{r setup}
+#set file path for fcs files, sample metadata and panel metadata
+fcs_dir <- getwd()
+metadata_dir <- 'metadata2.xlsx'
+panel_dir <- "panel_metadata2.xlsx"
+md <- read_excel(metadata_dir)
+panel <- read_excel(panel_dir)
+#read fcs files as a flowset
+fcs_files <- list.files(fcs_dir, pattern = "fcs$")
+fs <- read.flowSet(file.path(fcs_dir, fcs_files))
+#check if all the colname in panel file is in the flowset colames
+all(panel$fcs_colname %in% colnames(fs))
+#set levels for the columns of metadata file
+md$condition <- factor(md$condition, levels = c("JAK2", "Non_JAK2"))
+md$sample_id <- factor(md$sample_id,
+                       levels = md$sample_id[order(md$condition)])
+md$patient_id <- factor(md$patient_id)
+md$outcome <- factor(md$outcome, levels= c('1','2','3'))
+#construct a sce object
+sce <- prepData(fs, panel, md, md_cols = list(file='file_name',id='sample_id',factors=c('outcome','condition','patient_id')), features = panel$fcs_colname)
+#check the number of total cells;if the data is too heavy then downsampling could be considered 
+dim(sce)
+#example for how to perform downsampling, then define the downsampled data as sce_d 
+sce_d <-downsample(sce,n=2000,seed=1234)
+#check cell number of the downsampled sce object 
+dim(sce_d)
+```
+#Binary classification and annotation 
+The next is to use the key function of BinaryClust v.2 to automatically classify markers and cell populations based on user pre-defined classification matrix. Hence, please prepare a csv file(here is named 'types' in the example), where user can define each cell population based on different maker expression and their gating strategy. ‘+’ means positively expressed, ‘-’ means negatively expressed whereas ‘A’ means ‘any’. The specific names of the marker listed in the types file shall be exact the same as panel metadata. 
+
+```{r}
+#import user-defined types file
+class_dir <- 'types.csv'
+types <- read_csv('types.csv')
+#check the behavior of specific marker distribution  
+displayMarkers(sce,types,color_by='sample_id',ncol=3)
+#perform binary classification
+exprs <-t(assay(sce, 'exprs'))
+binary.results <- binaryClass(exprs, class_dir)
+sce$cluster_id <- unlist(binary.results)
+#check binary classification results of all cells
+plotbcFreq(sce,binary.results)
+plotbcHeatmap(sce,binary.results,remove.unclass=F)
+#plot DR colored by binary classification results
+sce <- runDR(sce, dr = "UMAP", cells = 2000, features = "type")
+sce <- runDR(sce, dr = "TSNE", cells = 2000, features = "type")
+plotDR(sce, "UMAP", color_by = "cluster_id")
+plotDR(sce, "TSNE", color_by = "cluster_id")
+```
+# Binary classification results: differential analysis visualisation(cell frequency and state marker expression) 
+The next is to plot the percentage/composition of the various cell lineages in different study groups.In this example dataset, we have two factors determining study groups: 'condition'(JAK2/non_JAK2) and ‘outcome’(1/2/3).  
+```{r}
+#plot DR facet by 'condition'
+plotDR(sce, "UMAP", color_by = "cluster_id",facet_by='condition')
+plotDR(sce, "TSNE", color_by = "cluster_id",facet_by='condition')
+#plot DR facet by 'outcome'
+plotDR(sce, "UMAP", color_by = "cluster_id",facet_by='outcome')
+plotDR(sce, "TSNE", color_by = "cluster_id",facet_by='outcome')
+#plot stacked histogram and boxplot comparing different study groups
+plotFreq(sce,type='stacked',group_by='condition')
+plotFreq(sce,type='box',group_by='condition')
+plotFreq(sce,type='stacked',group_by='outcome')
+plotFreq(sce,type='box',group_by='outcome')
+#plot state marker expression in each cluster
+plotStateMarkerExprs(sce,group='condition')
+plotStateMarkerExprs(sce,group='outcome')
+```
+#statistical analysis of binary classification results
+Users can extract the raw data(table) for cell frequencies to modify it based on statistical rules, for instance, remove certain outliers etc., then input the table for statistics. Instead, users can go straight from sce to get the statistical results.      
+
+For two study groups(n=2), Mann-Whitney Wilcoxon test will be used. If n>2, then Kruskal Wallis test will be applied followed by post hoc analysis. There are two options for post hoc analysis (pairwise Wilcoxon test, and Dunn’s test) with multiple testing correction using Benjamini-Hochberge Procedure(default). 
+```{r}
+# get raw data of cell frequencies
+fq<-freqData(sce,metadata=T)
+#statistical comparison for cell frequencies using sce object  
+stat_outcome<-statTest(sce,group='outcome',posthoc = T, method = 'pairwise.wilcox.test')
+stat_condition<-statTest(sce,group='condition')
+#statistical comparison using frequency table 
+stat_outcome<-statTest(abuntable=fq,group='outcome',posthoc = T, method = 'pairwise.wilcox.test')
+stat_condition<-statTest(abuntable=fq,group='condition')
+# get raw data of state expression
+
+```
+#extract cluster of interest for in-depth interrogation
+After binary classification and statistical analysis, perhaps based on literature or preliminary data, users may find one or two certain cluster are of particular interest, then decide to go deeper for more in-depth investigation.In this example, we are interested in CD4 T cells. In BinaryClust, Phenograph algorithm is available for clustering; and the rest like merging clusters, ploting hierachy clustering heatmap is compatible to CATALYST functions.    
+```{r}
+#subset CD4 T cell population for in-depth interrogation
+CD4_sce<-extractCluster(sce,cluster='T Cells, CD4')
+# run clustering algorithm Phenograph, and assign it to a new object named CD4_rph_sce
+set.seed(1234)
+CD4_rph_sce <-runPheno(CD4_sce,k=20,downsample=F,seed=134,type_markers = T)
+plotClusterHeatmap(CD4_rph_sce,
+                   hm2 = NULL, k = "rph", m = NULL,
+                   cluster_anno = TRUE, draw_freqs = TRUE)
+
+#OR users may choose flowSOM for clustering 
+CD4_sce<-CATALYST::cluster(CD4_sce, features = type_markers(CD4_sce),
+                        xdim = 10, ydim = 10, maxK = 40, seed = 1234)
+plotClusterHeatmap(CD4_sce,
+                   hm2 = NULL, k = "meta20", m = NULL,
+                   cluster_anno = TRUE, draw_freqs = TRUE)
+
+#merge clusters using CATALYST functions
+merging_table1<-read_excel("cluster_merging3.xlsx")
+head(data.frame(merging_table1))
+CD4_rph_sce <- mergeClusters(CD4_rph_sce, k = "rph",
+                     table = merging_table1, id = "merging1")
+plotClusterHeatmap(CD4_rph_sce, k = "merging1")
+plotAbundances(CD4_rph_sce, k = "merging1", by = "cluster_id", shape = "patient_id")
+
+fq_CD4T<-freqData(CD4_rph_sce,metadata=T)
+
+#statistical comparison for cell frequencies  
+stat_outcome_CD4T<-statTest(CD4_rph_sce,group='outcome',posthoc = T, method = 'pairwise.wilcox.test')
+stat_condition_CD4T<-statTest(CD4_rph_sce,group='condition',posthoc = T, method = 'pairwise.wilcox.test')
+```
+

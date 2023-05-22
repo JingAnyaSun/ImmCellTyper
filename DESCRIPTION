@@ -1,0 +1,30 @@
+Package: BinaryClust2
+Title: CyTOF data analysis toolkit 
+Version: 0.0.0.9000
+Authors@R: c( person("Jing", "Sun", email = "jing.1.sun@kcl.ac.uk", role = c("aut", "cre")),
+    person("Desmond", "Choy", email = "desmond.choy@kcl.ac.uk", role = c("aut")),
+    person("Shahram", "Kordasti", role = c("fnd")))
+Description: The BinaryClust2 package is a systematic pipeline for liquid CyTOF data analysis. By performing binary classification, the package can automatically classify and annotate main cell lineage based on user pre-defined classification matrix. Meanwhile, it i)features standard data structure using SingleCellExperiment class object, ii)supports data preprocessing including quality examination and batch correction(CytoNorm, CytofRUV),iii)enables interactive data visualisation, iv)dimentionality reduction(TSNE,UMAP) and clustering(flowSOM, Rphenograph), and v)statistical analysis for multiple study groups.  
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
+Imports: 
+    broom,
+    caret,
+    CATALYST (>= 1.12.2),
+    cowplot,
+    dplyr,
+    flowCore,
+    ggplot2,
+    RColorBrewer,
+    readr,
+    readxl,
+    reshape2,
+    Rphenograph,
+    rstatix,
+    SingleCellExperiment
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
