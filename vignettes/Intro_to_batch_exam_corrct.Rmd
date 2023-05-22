@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 )
 ```
 # Introduction to BinaryClust2 and batch effects
-BinaryClust2 is a systematic toolkit which enables data examination and downstream in-depth analysis of cell populations. Basically, it can be divided into two parts:
+BinaryClust2 is a systematic toolkit which enables data examination and downstream in-depth analysis of cell populations. Basically, it can be divided into two sessions:
 1. Batch examination and correction(if needed);
 2. In-depth data exploration, visualization and differential comparison. 
 
@@ -23,7 +23,7 @@ When samples are stained and measurements are done at multiple time points or si
 Here, we give a detailed explanation on how to do batch evaluation using various diagnostic plots, and correct batch-induced differences by CytoNorm or CytofRUV. 
 
 #Set up 
-Our batch effect evaluation strategy is based on the method and fcs files by Mtrussart et al. First users need to load all the packages required. 
+Our batch effect evaluation strategy is based on the method and fcs files introduced by Trussart et al. First, users need to load all the packages required. 
 ```{r setup}
 library(BinaryClust2)
 library(readxl)
@@ -44,24 +44,11 @@ The metadata file has 5 columns: 'file_name', 'sample_id', 'condition', 'patient
 The following is to point the file path for fcs files and metadata files. It is suggested that users put all the files under the same folder and to which set working directory.   
 
 ```{r}
+# The example data sit in test_data/test_files, users can download to local machine and test it. Origical fcs files are from Trussart et.al
 setwd("/Users/jingsun/Desktop/PhD project/CyTOF pipeline development/test_files")
 fcs_dir <- getwd()
 metadata_dir <- 'Metadata.xlsx'
 panel_dir <- "Panel.xlsx"
-#OR we can adapt the example provided by CytofRUV as follows:
-output_dir="test_files"
-  if (!dir.exists(output_dir)){
-    dir.create(output_dir)
-  }
-fcs_dir=file.path(getwd(),output_dir)
-write.FCS(x=CytofRUV::A1,filename =file.path(wd_data,"A1.fcs"))
-write.FCS(x=CytofRUV::A2,filename = file.path(wd_data,"A2.fcs"))
-write.FCS(x=CytofRUV::Run3_A1,filename = file.path(wd_data,"Run3_A1.fcs"))
-write.FCS(x=CytofRUV::Run3_A2,filename = file.path(wd_data,"Run3_A2.fcs"))
-write_xlsx(x=CytofRUV::md,path = file.path(wd_data,"Metadata.xlsx"))
-write_xlsx(x=CytofRUV::panel,path = file.path(wd_data,"Panel.xlsx"))
-metadata_dir <- 'Metadata.xlsx'
-panel_dir <- "Panel.xlsx" 
 ```
 # Data preparation and plotting diagnostic plots 
 Next is to integrate the fcs files and metadata into the one sce object and plot diagnostic plots one 4 levels:
@@ -73,7 +60,7 @@ Next is to integrate the fcs files and metadata into the one sce object and plot
 ```{r}
 #prepare data
 prepsce<-batchPrep(fcs_dir,metadata_dir,panel_dir)
-#(Optional):if the data is heavy, users can choose to downsample prepsce for diagnostic plots to speed up, this is not gonna affect the normalisation step 
+#(Optional):if the data is heavy, users can choose to downsample prepsce for diagnostic plots to speed it up, which is not gonna affect the normalization step 
 prepsce_n<-downsample(prepsce,n=1000)
 #evaluate marker expression across batches   
 plotExprs(prepsce, color_by = "batch")
@@ -82,6 +69,10 @@ plotExprHeatmap(prepsce, bin_anno = TRUE, row_anno = TRUE)
 #evaluate batch effect on clustering level
 batchExam(prepsce,downsample=1000,DR_method='TSNE')
 batchExam(prepsce,downsample=2000,k=25,DR_method='UMAP')
+#quality check across samples 
+n_cells(prepsce)
+plotExprs(prepsce, color_by = "sample_id")
+pbMDS(prepsce, color_by="sample_id")
 ```
 # Batch normlisation if applicable
 Users can determine whether significant batch effects exist in the dataset based on the diagnostic plots. If so, batch normalization is recommended and can be done by the below commands. There are two methods available in the function 'batchNorm': CytoNorm and CytofRUV, both are well-performing algorithms.   

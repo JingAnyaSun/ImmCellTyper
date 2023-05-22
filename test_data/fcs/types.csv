@@ -1,0 +1,8 @@
+Cell Type,CD14,CD16,CD161,CD19,CD20,CD3,CD4,CD56_NCAM,CD8,TCRgd
+NK Cells,-,A,A,-,A,-,A,+,A,A
+Dendritic Cells,-,A,A,-,A,-,A,-,A,A
+Monocytes,+,A,A,-,-,-,A,A,A,A
+B Cells,-,-,-,+,A,-,A,A,A,A
+"T Cells, Gamma Delta",-,A,A,-,A,+,A,A,A,+
+"T Cells, CD4",-,A,A,-,A,+,+,A,-,-
+"T Cells, CD8",-,A,A,-,A,+,-,A,+,-
