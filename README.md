@@ -82,6 +82,5 @@ The classification matrix is defined by users to specify the marker expression o
 ## Procedure
 If you have prepared all the required files mentioned above, then you are ready to start the workflow. It is suggested to first do the data quality and batch effects check(please refer to vignettes/Intro_to_batch_exam_corrct), then start the differential analysis(please see vignettes/Intro_to_data_analysis for detailed instructions). 
 
-Example dataset used can be downloaded from Zenodo [10.5281/zenodo.7966205](https://doi.org/10.5281/zenodo.7966205).
- 
+Example dataset used can be downloaded from Zenodo [10.5281/zenodo.7982165](https://doi.org/10.5281/zenodo.7982165).
 
