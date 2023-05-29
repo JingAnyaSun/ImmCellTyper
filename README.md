@@ -7,7 +7,8 @@ BinaryClust2 was developed based on BinaryClust with adaption of the framework a
 
 This package enables automatic classification and annotation of main cell types as well as in-depth interrogation of certain subpopulation of interest. By using k-means, BinaryClust2 takes advantage of the behaviour of CyTOF markers, which is log normal distributed with zero inflation, to automatically separate marker expression as positive and negative. Then based on user-defined classification matrix, cells can be classified and annotated as different populations.The accuracy and performance of the automatic annotation is comparable to manual gating. Users can further extract a certain population of interest, to perform further clustering and investigation. A variety of tools are integrated to support data quality check, batch effect correction, dimension reduction, clustering(flowSOM and Rphenograph), and sophisticated statistical testing for multiple group comparison etc. 
 
-<img width="1180" alt="BinaryClust diagram2" src="https://github.com/JingAnyaSun/BinaryClust2/assets/106811059/b0b2c0c8-3bd8-4936-87b5-2493d91b3947">
+<img width="1180" alt="BinaryClust diagram2" src="https://github.com/JingAnyaSun/BinaryClust2/assets/106811059/2fb5e5c2-210f-45b4-a0ac-451ebda201df">
+
 
 ## Installation
 The package can be installed via running the below commands:
@@ -80,3 +81,7 @@ The classification matrix is defined by users to specify the marker expression o
 ```
 ## Procedure
 If you have prepared all the required files mentioned above, then you are ready to start the workflow. It is suggested to first do the data quality and batch effects check(please refer to vignettes/Intro_to_batch_exam_corrct), then start the differential analysis(please see vignettes/Intro_to_data_analysis for detailed instructions). 
+
+Example dataset used can be downloaded from Zenodo [10.5281/zenodo.7966205](https://doi.org/10.5281/zenodo.7966205).
+ 
+
