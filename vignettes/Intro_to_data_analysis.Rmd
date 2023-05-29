@@ -42,6 +42,8 @@ library(igraph)
 Users are required to prepare two excel files of panel metadata and sample metadata. Briefly, panel metadata describes the panel used in the experiment, which includes three columns: ‘fcs_colname’, ‘antigen’ and ‘marker_class’. ‘fcs_colname’ is metal/channel names and can be checked via either cytobank or using flowCore package function: colnames(); ‘Antigen’ refers to marker names which can be checked from the applied CyTOF kit instructions; Based on CATALYST, markers can be classified as ‘type’, which means lineage markers and will be used for clustering and ‘state’ which indicates functional markers like intracellular signalling proteins etc. Sample metadata indicates the experimental design which contains the information of fcs file name(‘file_name’), ‘sample_id’, ‘patient_id’, experimental grouping(‘condition’), or additional information like ‘outcome’ etc. Please prepare you own sample metadata accordingly. 
 
 Before importing into R-based analytical pipelines, all fcs files are supposed to be normalized for signal fluctuation during acquisition and cleaned up to exclude all sorts of debris, doublets etc. using third-party platform, for instance, Cytobank(https://premium.cytobank.org/cytobank/login). Some users might prefer to do compensation dependent on their preference and previous experience of handling certain types of panel and samples. 
+
+Example dataset used here can be downloaded from Zenodo(https://doi.org/10.5281/zenodo.7982165).
 ```{r setup}
 #set file path for fcs files, sample metadata and panel metadata
 fcs_dir <- getwd()
@@ -52,6 +54,7 @@ panel <- read_excel(panel_dir)
 #read fcs files as a flowset
 fcs_files <- list.files(fcs_dir, pattern = "fcs$")
 fs <- read.flowSet(file.path(fcs_dir, fcs_files))
+#Data preparation
 #check if all the colname in panel file is in the flowset colames
 all(panel$fcs_colname %in% colnames(fs))
 #set levels for the columns of metadata file
@@ -69,9 +72,18 @@ sce_d <-downsample(sce,n=2000,seed=1234)
 #check cell number of the downsampled sce object 
 dim(sce_d)
 ```
+Or alternatively, you can download the defined R objects directly into memory to skip the above import process, as shown below: 
+```{r}
+#download sample metadata, panel metadata and the fcs object from Zenodo
+options(timeout = 200)
+load(url("https://zenodo.org/record/7966205/files/md.RData?download=1"))
+head(md)
+load(url("https://zenodo.org/record/7966205/files/panel.RData?download=1"))
+head(panel)
+load(url("https://zenodo.org/record/7966205/files/MPN_sce.RData?download=1"))
+```
 #Binary classification and annotation 
 The next is to use the key function of BinaryClust2 to automatically classify markers and cell populations based on user pre-defined classification matrix. Hence, please prepare a csv file(here is named as 'types' in the example), where user can define each cell population based on different maker expression and their gating strategy. ‘+’ means positively expressed, ‘-’ means negatively expressed whereas ‘A’ means ‘any’. The specific names of the marker listed in the types file shall be exact the same as panel metadata. 
-
 ```{r}
 #import user-defined types file
 class_dir <- 'types.csv'

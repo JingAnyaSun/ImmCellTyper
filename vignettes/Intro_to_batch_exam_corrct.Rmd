@@ -37,14 +37,14 @@ library(dplyr)
 library(writexl)
 ```
 #Import dataset and metadata files 
-In the example folder named 'test_files', there are 4 fcs files, one sample metadata excel file('Metadata.xlsx'), and one panel metadata file('Panel.xlsx'). 
+The example dataset is from Trussart et al.including 4 fcs files, one sample metadata excel file('Metadata.xlsx'), and one panel metadata file('Panel.xlsx'),which can be downloaded from Zenodo(https://doi.org/10.5281/zenodo.7982213) 
 
 The metadata file has 5 columns: 'file_name', 'sample_id', 'condition', 'patient_id', 'batch', which contains the information of the grouping, conditions and batches of each fcs file. Since our batch correction method is based on CytofRUV or CytoNorm, reference/anchor sample in each batch is required, and shall be named as 'Ref' in the condition column; The panel file contains 3 columns: 'fcs_colname','antigen','marker_class'.  
 
 The following is to point the file path for fcs files and metadata files. It is suggested that users put all the files under the same folder and to which set working directory.   
 
 ```{r}
-# The example data sit in test_data/test_files, users can download to local machine and test it. Origical fcs files are from Trussart et.al
+# set working direcotry and import dataset
 setwd("/Users/jingsun/Desktop/PhD project/CyTOF pipeline development/test_files")
 fcs_dir <- getwd()
 metadata_dir <- 'Metadata.xlsx'
