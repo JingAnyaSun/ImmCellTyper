@@ -13,8 +13,9 @@ This package enables automatic classification and annotation of main cell types 
 ## Installation
 The package can be installed via running the below commands:
 ```
-library(devtools)
-install_github("JingAnyaSun/BinaryClust2")
+if(!require(devtools, quietly = TRUE))
+  install.packages("devtools")
+  devtools::install_github("JingAnyaSun/BinaryClust2")
 ```
 ## Required files 
 BinaryClust2 pipeline requires fcs files(.fcs), sample metadata(.xlsx), panel metadata(.xlsx), and classification matrix(.csv). It is recommended to put all the files needed under the same folder. 
