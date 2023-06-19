@@ -4,14 +4,25 @@
 \alias{plotbcHeatmap}
 \title{Plot median marker expression heatmap of binary classification results}
 \usage{
-plotbcHeatmap(sce, binary.results, remove.unclass = FALSE)
+plotbcHeatmap(
+  sce,
+  binary.results,
+  type,
+  remove.unclass = FALSE,
+  use_marker = "all"
+)
 }
 \arguments{
 \item{sce}{a SingleCellExperiment object}
 
 \item{binary.results}{list, results from binaryClust function}
 
+\item{type}{a data frame of user pre-defined classification matrix}
+
 \item{remove.unclass}{logical vector, option to remove unclassified cells from plot, default is F}
+
+\item{use_marker}{a character string which users can choose the markers to display in the heatmap, options are 'all' which means
+all markers,'types' indicates type markers, and 'binary' suggests specific markers used for binary classification.}
 }
 \value{
 a ggplot object

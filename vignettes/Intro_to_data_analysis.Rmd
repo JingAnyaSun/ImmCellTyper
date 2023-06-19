@@ -22,7 +22,6 @@ First, load below R packages.
 ```{r setup}
 #load required R packages 
 library(BinaryClust2)
-library(BinaryClust2)
 library(CATALYST)
 library(readxl)
 library(flowCore)
@@ -37,6 +36,7 @@ library(Rphenograph)
 library(readr)
 library(RColorBrewer)
 library(igraph)
+library(pheatmap)
 ```
 #Data Preparation
 Users are required to prepare two excel files of panel metadata and sample metadata. Briefly, panel metadata describes the panel used in the experiment, which includes three columns: ‘fcs_colname’, ‘antigen’ and ‘marker_class’. ‘fcs_colname’ is metal/channel names and can be checked via either cytobank or using flowCore package function: colnames(); ‘Antigen’ refers to marker names which can be checked from the applied CyTOF kit instructions; Based on CATALYST, markers can be classified as ‘type’, which means lineage markers and will be used for clustering and ‘state’ which indicates functional markers like intracellular signalling proteins etc. Sample metadata indicates the experimental design which contains the information of fcs file name(‘file_name’), ‘sample_id’, ‘patient_id’, experimental grouping(‘condition’), or additional information like ‘outcome’ etc. Please prepare you own sample metadata accordingly. 
@@ -98,6 +98,7 @@ sce$cluster_id <- unlist(binary.results)
 plotbcFreq(sce,binary.results)
 plotbcHeatmap(sce,binary.results,remove.unclass=F)
 #plot DR colored by binary classification results
+set.seed(1234)
 sce <- runDR(sce, dr = "UMAP", cells = 2000, features = "type")
 sce <- runDR(sce, dr = "TSNE", cells = 2000, features = "type")
 plotDR(sce, "UMAP", color_by = "cluster_id")

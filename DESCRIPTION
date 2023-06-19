@@ -28,3 +28,4 @@ Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
+URL: https://github.com/JingAnyaSun/BinaryClust2

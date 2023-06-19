@@ -3,13 +3,16 @@
 #' Visaulation of the median marker expression of each auto-annotated cluster
 #' @param sce a SingleCellExperiment object
 #' @param binary.results list, results from binaryClust function
+#' @param type a data frame of user pre-defined classification matrix
+#' @param use_marker a character string which users can choose the markers to display in the heatmap, options are 'all' which means
+#' all markers,'types' indicates type markers, and 'binary' suggests specific markers used for binary classification.
 #' @param remove.unclass logical vector, option to remove unclassified cells from plot, default is F
 #' @return a ggplot object
 #' @export
 #'
 #' @examples
 #' plotbcHeatmap(sce,binary.results,remove.unclass=F)
-plotbcHeatmap<-function (sce,binary.results, remove.unclass = FALSE)
+plotbcHeatmap<-function (sce,binary.results, type,remove.unclass = FALSE,use_marker='all')
 {
   #define the function of binary_summary
   binary_summary<-function (data = NULL, binary.results = NULL)
@@ -53,6 +56,18 @@ plotbcHeatmap<-function (sce,binary.results, remove.unclass = FALSE)
   rownames(to.plot) <- to.plot[, "Cell.Type"]
   to.plot <- subset(to.plot, select = -c(Cell.Type, Frequency,
                                          Percentage))
+  to.plot<-as.matrix(to.plot)
+  if(use_marker=='type'){
+    to.plot <- to.plot[,type_markers(sce)]
+  }else if (use_marker == 'binary'){
+    m <- colnames(type)[colnames(type)!='Cell Type']
+    to.plot <- to.plot[,m]
+  }else if (use_marker=='all'){
+    to.plot <- to.plot
+  }else{
+    message('Error: for \'use_marker\'Please choose \'type\',\'all\'or\'binary\'')
+  }
+
   hm_pal = rev(brewer.pal(11, "RdYlBu"))
   medians.heatmap<-pheatmap(to.plot, color = colorRampPalette(hm_pal)(100),
                             cluster_cols = F,
@@ -61,7 +76,5 @@ plotbcHeatmap<-function (sce,binary.results, remove.unclass = FALSE)
                             cellwidth = 10,
                             cellheight = 17)
 
-  grid.newpage()
-  plot <- grid.draw(medians.heatmap$gtable)
-  return(plot)
+  return(medians.heatmap)
 }
