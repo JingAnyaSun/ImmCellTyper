@@ -17,6 +17,7 @@ Imports:
     dplyr,
     flowCore,
     ggplot2,
+    pheatmap,
     RColorBrewer,
     readr,
     readxl,

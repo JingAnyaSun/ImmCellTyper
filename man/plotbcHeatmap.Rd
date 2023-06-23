@@ -22,7 +22,7 @@ plotbcHeatmap(
 \item{remove.unclass}{logical vector, option to remove unclassified cells from plot, default is F}
 
 \item{use_marker}{a character string which users can choose the markers to display in the heatmap, options are 'all' which means
-all markers,'types' indicates type markers, and 'binary' suggests specific markers used for binary classification.}
+all markers,'types' indicates type markers, and 'binary' suggests specific markers used for binary classification, default is 'all'.}
 }
 \value{
 a ggplot object
@@ -31,5 +31,5 @@ a ggplot object
 Visaulation of the median marker expression of each auto-annotated cluster
 }
 \examples{
-plotbcHeatmap(sce,binary.results,remove.unclass=F)
+plotbcHeatmap(sce,binary.results=binary.results,type = types, remove.unclass=F, user_marker = 'type')
 }

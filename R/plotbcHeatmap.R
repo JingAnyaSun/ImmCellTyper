@@ -5,13 +5,13 @@
 #' @param binary.results list, results from binaryClust function
 #' @param type a data frame of user pre-defined classification matrix
 #' @param use_marker a character string which users can choose the markers to display in the heatmap, options are 'all' which means
-#' all markers,'types' indicates type markers, and 'binary' suggests specific markers used for binary classification.
+#' all markers,'types' indicates type markers, and 'binary' suggests specific markers used for binary classification, default is 'all'.
 #' @param remove.unclass logical vector, option to remove unclassified cells from plot, default is F
 #' @return a ggplot object
 #' @export
 #'
 #' @examples
-#' plotbcHeatmap(sce,binary.results,remove.unclass=F)
+#' plotbcHeatmap(sce,binary.results=binary.results,type = types, remove.unclass=F, user_marker = 'type')
 plotbcHeatmap<-function (sce,binary.results, type,remove.unclass = FALSE,use_marker='all')
 {
   #define the function of binary_summary
