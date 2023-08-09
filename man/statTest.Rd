@@ -7,6 +7,7 @@
 statTest(
   sce,
   abuntable = NULL,
+  type = "DA",
   group,
   posthoc = T,
   method = "pairwise.wilcox.test"
@@ -16,6 +17,8 @@ statTest(
 \item{sce}{a SingleCellExperiment object}
 
 \item{abuntable}{data frame generated from freqData function showing cell frequency data of each patient/sample,defalut is 'NULL'}
+
+\item{type}{character string specifying the type of statistical analysis, with 'DA' stands for differential cell abundance analysis and 'DS'represents differential marker expression test facet by each cell subsets, default is 'DA'}
 
 \item{group}{character string specifying the keyword for comparison, e.g.'condition'}
 
@@ -39,4 +42,7 @@ s<-statTest(sce,group='outcome',posthoc=T,method='dunn.test')
 s<-statTest(sce,group='outcome')
 # Input data can be a data frame instead of a sce object, just in case certain statistical modification has to be done before statistical comparison(e.g.remove certain outliers)
 s<-statTest(abuntable=at,group='condition')
+# Differential analysis of functional marker expression, choose type as DE, n=2 will perform Mann-Whitney test and n>=3 will perform pairwise wilcoxon test
+test<-statTest(sce,type='DE',group='condition')
+
 }

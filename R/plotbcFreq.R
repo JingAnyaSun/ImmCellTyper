@@ -12,7 +12,7 @@
 #'
 plotbcFreq<-function(sce,binary.results,style='bar'){
 
-  #define the function of binary_summary
+  #define the function of binary_summary, which is to get the summary of binary classification results
 #' Title
 #'
 #' @param data sce object
@@ -45,9 +45,12 @@ plotbcFreq<-function(sce,binary.results,style='bar'){
     to.return <- merge(medians, frequencies, by = "Cell.Type")
     return(to.return)
   }
+
+  #extract expression data from sce and calculate cell composition
   exprs_n <- t(assay(sce, 'exprs'))
   binary.summary <- binary_summary(exprs_n, binary.results)
 
+  #plot bar chart of cell percentages
   if(style=='bar'){
     p<-ggplot(binary.summary,  aes("", Percentage, fill = Cell.Type)) +
       geom_bar(stat="identity", position = position_dodge())  +
@@ -56,7 +59,7 @@ plotbcFreq<-function(sce,binary.results,style='bar'){
       geom_text(aes(label=round(Percentage,2)), position=position_dodge(width=0.9), vjust=0.1,size=3.5)+
       labs(title = "Cell Abundance", x = "Cell types", y = "Percentage(%)")+
       coord_flip() } else if(style=='pie'){
-
+  #plot pie chart of cell percentages
     p<-ggplot(binary.summary, aes(x = "", y = Percentage, fill = Cell.Type)) +
       geom_bar(stat = "identity", width = 1, color = "white") +
       coord_polar("y") +
