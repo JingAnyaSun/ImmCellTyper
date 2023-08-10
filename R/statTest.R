@@ -1,6 +1,6 @@
-#' Statistical test for cell frequencies
+#' Statistical test for cell frequencies and state marker expression
 #'
-#' Statistical comparison for cell frequencies/abundance in different study groups; Mann-Whitney test will be used
+#' Statistical comparison for cell frequencies/state marker expression in different study groups; Mann-Whitney test will be used
 #' for two study groups, whereas Kruskal-Wallis test will be used for more than two groups with multiple testing correction and post hoc analysis.
 #' @param sce a SingleCellExperiment object
 #' @param abuntable data frame generated from freqData function showing cell frequency data of each patient/sample,defalut is 'NULL'

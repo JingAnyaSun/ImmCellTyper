@@ -2,7 +2,7 @@
 % Please edit documentation in R/statTest.R
 \name{statTest}
 \alias{statTest}
-\title{Statistical test for cell frequencies}
+\title{Statistical test for cell frequencies and state marker expression}
 \usage{
 statTest(
   sce,
@@ -37,7 +37,7 @@ option is 'dunn.test'}
 Table(s) of the statistics with p value, method, and significance
 }
 \description{
-Statistical comparison for cell frequencies/abundance in different study groups; Mann-Whitney test will be used
+Statistical comparison for cell frequencies/state marker expression in different study groups; Mann-Whitney test will be used
 for two study groups, whereas Kruskal-Wallis test will be used for more than two groups with multiple testing correction and post hoc analysis.
 }
 \examples{
