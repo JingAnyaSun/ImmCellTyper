@@ -104,7 +104,7 @@ sce <- runDR(sce, dr = "TSNE", cells = 2000, features = "type")
 plotDR(sce, "UMAP", color_by = "cluster_id")
 plotDR(sce, "TSNE", color_by = "cluster_id")
 ```
-# Binary classification results: differential analysis visualisation(cell frequency and state 
+# Binary classification results: differential analysis visualisation(cell frequency and state) 
 Then plot the percentage/composition of the various cell lineages in different study groups.In this example dataset, we have two factors determining study groups: 'condition'(JAK2/non_JAK2) and ‘outcome’(1/2/3).  
 ```{r}
 #plot DR facet by 'condition'
@@ -135,7 +135,9 @@ stat_condition<-statTest(sce,group='condition')
 #statistical comparison using frequency table 
 stat_outcome<-statTest(abuntable=fq,group='outcome',posthoc = T, method = 'pairwise.wilcox.test')
 stat_condition<-statTest(abuntable=fq,group='condition')
-
+#statistical comparison for state marker expression under each cell umbrella 
+stat_exprs_outcome <- statTest(sce,type='DE',group='outcome')
+stat_exprs_condition <- statTest(sce,type='DE',group='condition')
 ```
 #extract cluster of interest for in-depth interrogation
 After binary classification and statistical analysis, or perhaps based on literature and preliminary data, users may find one or two certain cluster are of particular interest, then decide to go deeper for more in-depth investigation. In this example, we are interested in CD4 T cells. In BinaryClust, Phenograph algorithm is available for clustering; and the rest like merging clusters, ploting hierachy clustering heatmap is compatible to CATALYST functions.    
@@ -173,5 +175,10 @@ fq_CD4T<-freqData(CD4_rph_sce,metadata=T)
 #statistical comparison for cell frequencies  
 stat_outcome_CD4T<-statTest(CD4_rph_sce,group='outcome',posthoc = T, method = 'pairwise.wilcox.test')
 stat_condition_CD4T<-statTest(CD4_rph_sce,group='condition',posthoc = T, method = 'pairwise.wilcox.test')
+#statistical comparison for state marker expression within each cell subcluster
+stat_exprs_outcome_CD4T <- statTest(CD4_rph_sce,type='DE',group='outcome')
+stat_exprs_condition_CD4T <- statTest(CD4_rph_sce,type='DE',group='condition')
+
+
 ```
 
