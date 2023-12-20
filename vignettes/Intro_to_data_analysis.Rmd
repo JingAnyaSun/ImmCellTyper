@@ -1,8 +1,8 @@
 ---
-title: "Introduction to BinaryClust2 data analysis pipeline"
+title: "Introduction to ImmCellTyper data analysis pipeline"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Introduction to BinaryClust2 data analysis pipeline}
+  %\VignetteIndexEntry{Introduction to ImmCellTyper data analysis pipeline}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -13,15 +13,15 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 ```
-#Introduction to BinaryClust2 data analysis pipeline
-BinaryClust2 was further developed based on BinaryClust with adaption of the framework and structure of CyTOF data analysis workflow described by Nowicka et al. This package enables automatic classification and annotation of main cell types as well as in-depth interrogation of certain sub-population of interest.
+#Introduction to ImmCellTyper data analysis pipeline
+ImmCellTyper was further developed based on the framework and structure of CyTOF data analysis workflow described by Nowicka et al. This package enables automatic classification and annotation of main cell types as well as in-depth interrogation of certain sub-population of interest.
 
 After data quality check, batch effect evaluation and correction, here we can continue for differential analysis. 
 
 First, load below R packages. 
 ```{r setup}
 #load required R packages 
-library(BinaryClust2)
+library(ImmCellTyper)
 library(CATALYST)
 library(readxl)
 library(flowCore)
@@ -83,7 +83,7 @@ head(panel)
 load(url("https://zenodo.org/record/7966205/files/MPN_sce.RData?download=1"))
 ```
 #Binary classification and annotation 
-The next is to use the key function of BinaryClust2 to automatically classify markers and cell populations based on user pre-defined classification matrix. Hence, please prepare a csv file(here is named as 'types' in the example), where user can define each cell population based on different maker expression and their gating strategy. ‘+’ means positively expressed, ‘-’ means negatively expressed whereas ‘A’ means ‘any’. The specific names of the marker listed in the types file shall be exact the same as panel metadata. 
+The next is to use the key function of ImmCellTyper which is BinaryClust to automatically classify markers and cell populations based on user pre-defined classification matrix. Hence, please prepare a csv file(here is named as 'types' in the example), where user can define each cell population based on different maker expression and their gating strategy. ‘+’ means positively expressed, ‘-’ means negatively expressed whereas ‘A’ means ‘any’. The specific names of the marker listed in the types file shall be exact the same as panel metadata. 
 ```{r}
 #import user-defined types file
 class_dir <- 'types.csv'

@@ -1,10 +1,10 @@
-Package: BinaryClust2
+Package: ImmCellTyper
 Title: CyTOF data analysis toolkit 
 Version: 0.0.0.9000
 Authors@R: c( person("Jing", "Sun", email = "jing.1.sun@kcl.ac.uk", role = c("aut", "cre")),
     person("Desmond", "Choy", email = "desmond.choy@kcl.ac.uk", role = c("aut")),
     person("Shahram", "Kordasti", role = c("fnd")))
-Description: The BinaryClust2 package is a systematic pipeline for liquid CyTOF data analysis. By performing binary classification, the package can automatically classify and annotate main cell lineage based on user pre-defined classification matrix. Meanwhile, it i)features standard data structure using SingleCellExperiment class object, ii)supports data preprocessing including quality examination and batch correction(CytoNorm, CytofRUV),iii)enables interactive data visualisation, iv)dimentionality reduction(TSNE,UMAP) and clustering(flowSOM, Rphenograph), and v)statistical analysis for multiple study groups.  
+Description: The ImmCellTyper package is a systematic pipeline for liquid CyTOF data analysis. By using the method of BinaryClust, the package can automatically classify and annotate main cell lineage based on user pre-defined classification matrix. Meanwhile, it i)features standard data structure using SingleCellExperiment class object, ii)supports data preprocessing including quality examination and batch correction(CytoNorm, CytofRUV),iii)enables interactive data visualisation, iv)dimentionality reduction(TSNE,UMAP) and clustering(flowSOM, Rphenograph), and v)statistical analysis for multiple study groups.  
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -29,4 +29,4 @@ Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
-URL: https://github.com/JingAnyaSun/BinaryClust2
+URL: https://github.com/JingAnyaSun/ImmCellTyper

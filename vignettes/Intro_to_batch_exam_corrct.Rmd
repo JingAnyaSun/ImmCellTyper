@@ -13,8 +13,8 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 ```
-# Introduction to BinaryClust2 and batch effects
-BinaryClust2 is a systematic toolkit which enables data examination and downstream in-depth analysis of cell populations. Basically, it can be divided into two sessions:
+# Introduction to ImmCellTyper and batch effects
+ImmCellTyper is a systematic toolkit which enables data examination and downstream in-depth analysis of cell populations. Basically, it can be divided into two sessions:
 1. Batch examination and correction(if needed);
 2. In-depth data exploration, visualization and differential comparison. 
 
@@ -25,7 +25,7 @@ Here, we give a detailed explanation on how to do batch evaluation using various
 #Set up 
 Our batch effect evaluation strategy is based on the method and fcs files introduced by Trussart et al. First, users need to load all the packages required. 
 ```{r setup}
-library(BinaryClust2)
+library(ImmCellTyper)
 library(readxl)
 library(CATALYST)
 library(SingleCellExperiment)
