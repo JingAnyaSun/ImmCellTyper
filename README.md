@@ -1,11 +1,9 @@
-# BinaryClust2
+# ImmCellTyper
  Cytof data analysis toolkit with cell population auto-annotation function  
  
 ## Introduction
  
-BinaryClust2 was developed based on BinaryClust with adaption of the framework and structure of CyTOF data analysis workflow described by Nowicka et al (CyTOF workflow: differential discovery in high-throughput high-dimensional cytometry datasets).
-
-This package enables automatic classification and annotation of main cell types as well as in-depth interrogation of certain subpopulation of interest. By using k-means, BinaryClust2 takes advantage of the behaviour of CyTOF markers, which is log normal distributed with zero inflation, to automatically separate marker expression as positive and negative. Then based on user-defined classification matrix, cells can be classified and annotated as different populations.The accuracy and performance of the automatic annotation is comparable to manual gating. Users can further extract a certain population of interest, to perform further clustering and investigation. A variety of tools are integrated to support data quality check, batch effect correction, dimension reduction, clustering(flowSOM and Rphenograph), and sophisticated statistical testing for multiple group comparison etc. 
+ImmCellTyper was developed based on the framework and structure of CyTOF data analysis workflow described by Nowicka et al (CyTOF workflow: differential discovery in high-throughput high-dimensional cytometry datasets), and has a novel in house semi-supervised clustering tool named BinaryClust, which enables automatic classification and annotation of main cell types as well as in-depth interrogation of certain subpopulation of interest. By using k-means, BinaryClust takes advantage of the behaviour of CyTOF markers, which is log normal distributed with zero inflation in most of cases, to separate positive and negative cell populations of each protein marker. Then align the results with user-defined classification matrix, cells can be classified and annotated as different populations.The accuracy and performance of the automatic annotation is comparable to manual gating. Users can further extract a certain population of interest, to perform further clustering and investigation. Moreover, a variety of tools are integrated to support data quality check, batch effect correction, dimension reduction, unsupervised clustering(flowSOM and Rphenograph), and sophisticated statistical testing for multiple group comparison etc. 
 
 <img width="1180" alt="BinaryClust diagram2" src="https://github.com/JingAnyaSun/BinaryClust2/assets/106811059/2fb5e5c2-210f-45b4-a0ac-451ebda201df">
 
@@ -15,10 +13,10 @@ The package can be installed via running the below commands:
 ```
 if(!require(devtools, quietly = TRUE))
   install.packages("devtools")
-  devtools::install_github("JingAnyaSun/BinaryClust2")
+  devtools::install_github("JingAnyaSun/ImmCellTyper")
 ```
 ## Required files 
-BinaryClust2 pipeline requires fcs files(.fcs), sample metadata(.xlsx), panel metadata(.xlsx), and classification matrix(.csv). It is recommended to put all the files needed under the same folder. 
+ImmCellTyper pipeline requires fcs files(.fcs), sample metadata(.xlsx), panel metadata(.xlsx), and classification matrix(.csv). It is recommended to put all the files needed under the same folder. 
 ### Sample metadata
 1. For running the batch evaluation/normalisation session, an example of sample metadata is listed below, which should contain the information of file names('file_name'), sample ids('sample_id'), grouping('condition'), patient ids('patient_id') and batches('batch'). And for the reference/control/anchor sample in each run, it should be labelled as 'Ref' in 'condition' column:
 ```
